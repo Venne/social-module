@@ -1,0 +1,6 @@
+services:
+
+	social.socialFormFactory:
+		class: SocialModule\Forms\SocialFormFactory
+		setup:
+			- injectFactory(@cms.admin.ajaxFormFactory)

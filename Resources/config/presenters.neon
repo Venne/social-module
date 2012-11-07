@@ -1,0 +1,11 @@
+services:
+
+	cms.admin.socialPresenter:
+		class: SocialModule\Presenters\SocialPresenter
+		tags: [presenter, administration: [
+			link: 'Cms:Admin:Social:'
+			category: 'Security'
+			name: 'Social authenticators'
+			description: 'Setup social authenticators'
+			priority: 49
+		]]

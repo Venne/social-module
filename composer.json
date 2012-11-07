@@ -1,0 +1,35 @@
+{
+	"name": "venne/social-module",
+	"description": "Social module",
+	"keywords": ["cms", "nette", "venne", "module"],
+	"type": "venne-module",
+	"authors": [
+		{
+			"name": "Josef Kříž",
+			"homepage": "http://josef-kriz.cz"
+		}
+	],
+	"require": {
+		"php" : ">=5.3.2",
+		"venne/cms-module" : "2.0.x-dev",
+		"fightbulc/facebook-php-sdk": "3.2.1"
+	},
+	"autoload": {
+		"psr-0": { "SocialModule": "" }
+	},
+	"extra": {
+		"branch-alias": {
+			"dev-master": "2.0.x-dev"
+		},
+		"venne": {
+			"configuration": {
+				"includes": [
+					"%modules.social.path%/Resources/config/config.neon"
+				],
+				"extensions": {
+					"social": "SocialModule\\DI\\SocialExtension"
+				}
+			}
+		}
+	}
+}
