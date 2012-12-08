@@ -103,10 +103,7 @@ class FacebookLogin extends Object implements \CmsModule\Security\ISocialLogin
 		if ($this->user) {
 			$this->logoutUrl = $this->facebook->getLogoutUrl();
 		} else {
-			$this->loginUrl = $this->facebook->getLoginUrl(array(
-				'scope' => 'username',
-				'redirect_uri' => 'https://www.myapp.com/post_login_page'
-			));
+			$this->loginUrl = $this->facebook->getLoginUrl();
 		}
 	}
 
