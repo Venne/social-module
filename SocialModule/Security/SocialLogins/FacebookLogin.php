@@ -179,7 +179,7 @@ class FacebookLogin extends Object implements \CmsModule\Security\ISocialLogin
 			} catch (\Doctrine\ORM\NoResultException $e) {
 			}
 
-			if ($user) {
+			if (isset($user) && $user) {
 				return new \Nette\Security\Identity($user->getEmail(), $user->getRoles());
 			}
 		}
