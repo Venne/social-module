@@ -35,6 +35,14 @@ class SocialPresenter extends \CmsModule\Administration\Presenters\BasePresenter
 	}
 
 
+	/**
+	 * @secured(privilege="show")
+	 */
+	public function actionDefault()
+	{
+	}
+
+
 	protected function createComponentForm()
 	{
 		$form = $this->socialFormFactory->invoke();
