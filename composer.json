@@ -25,9 +25,6 @@
 		},
 		"venne":{
 			"configuration":{
-				"includes":[
-					"%modules.social.path%/Resources/config/config.neon"
-				],
 				"extensions":{
 					"social":"SocialModule\\DI\\SocialExtension"
 				}

@@ -35,7 +35,11 @@ class SocialExtension extends CompilerExtension
 	 */
 	public function loadConfiguration()
 	{
-		parent::loadConfiguration();
+		$this->compiler->parseServices(
+			$this->getContainerBuilder(),
+			$this->loadFromFile(dirname(dirname(__DIR__)) . '/Resources/config/config.neon')
+		);
+
 		$container = $this->getContainerBuilder();
 		$config = $this->getConfig($this->defaults);
 
