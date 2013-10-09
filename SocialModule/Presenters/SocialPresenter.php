@@ -11,7 +11,6 @@
 
 namespace SocialModule\Presenters;
 
-use Venne;
 use SocialModule\Forms\SocialFormFactory;
 
 /**
@@ -53,12 +52,13 @@ class SocialPresenter extends \CmsModule\Administration\Presenters\BasePresenter
 
 	public function formSuccess()
 	{
-		$this->flashMessage('Form has been saved', 'success');
+		$this->flashMessage($this->translator->translate('Form has been saved'), 'success');
 
 		if (!$this->isAjax()) {
 			$this->redirect('this');
 		}
 
+		$this->invalidateControl('content');
 		$this->payload->url = $this->link('this');
 	}
 }

@@ -11,14 +11,14 @@
 
 namespace SocialModule\Elements\Entities;
 
-use Venne;
+use CmsModule\Content\Elements\ExtendedElementEntity;
 use Doctrine\ORM\Mapping as ORM;
 use CmsModule\Content\Entities\ElementEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-abstract class BaseSocialEntity extends ElementEntity
+abstract class BaseSocialEntity extends ExtendedElementEntity
 {
 
 	/**

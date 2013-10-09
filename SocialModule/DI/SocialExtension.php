@@ -47,7 +47,8 @@ class SocialExtension extends CompilerExtension
 			->setClass('SocialModule\Security\SocialLogins\FacebookLogin', array($config['facebook']['appId'], $config['facebook']['secret']))
 			->setAutowired(false)
 			->addSetup('injectUserRepository', array('@cms.userRepository'))
-			->addSetup('injectCheckConnection', array('@doctrine.checkConnectionFactory'));
+			->addSetup('injectCheckConnection', array('@doctrine.checkConnectionFactory'))
+			->addSetup('injectTranslator');
 
 	}
 

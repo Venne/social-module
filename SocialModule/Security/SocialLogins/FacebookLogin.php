@@ -11,9 +11,13 @@
 
 namespace SocialModule\Security\SocialLogins;
 
-use Venne;
-use Nette\Object;
+use CmsModule\Pages\Users\UserEntity;
+use CmsModule\Security\Entities\SocialLoginEntity;
+use CmsModule\Security\Identity;
 use DoctrineModule\Repositories\BaseRepository;
+use Nette\Localization\ITranslator;
+use Nette\Object;
+use Nette\Security\AuthenticationException;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -24,6 +28,7 @@ class FacebookLogin extends Object implements \CmsModule\Security\ISocialLogin
 	/** @var BaseRepository */
 	protected $userRepository;
 
+	/** @var Callback */
 	protected $checkConnection;
 
 	/** @var Facebook */
@@ -37,13 +42,17 @@ class FacebookLogin extends Object implements \CmsModule\Security\ISocialLogin
 	/** @var string */
 	protected $secret;
 
-	protected $loginUrl;
-
-	protected $logoutUrl;
-
+	/** @var array */
 	protected $data;
 
+	/** @var boolean */
 	protected $_load;
+
+	/** @var string */
+	protected $redirectUri;
+
+	/** @var ITranslator */
+	private $translator;
 
 
 	/**
@@ -72,9 +81,36 @@ class FacebookLogin extends Object implements \CmsModule\Security\ISocialLogin
 	}
 
 
+	/**
+	 * @param ITranslator $translator
+	 */
+	public function injectTranslator(ITranslator $translator)
+	{
+		$this->translator = $translator;
+	}
+
+
+	/**
+	 * @return ITranslator
+	 */
+	protected function getTranslator()
+	{
+		return $this->translator;
+	}
+
+
 	public function getType()
 	{
 		return 'facebook';
+	}
+
+
+	/**
+	 * @param mixed $redirectUri
+	 */
+	public function setRedirectUri($redirectUri)
+	{
+		$this->redirectUri = $redirectUri;
 	}
 
 
@@ -99,12 +135,6 @@ class FacebookLogin extends Object implements \CmsModule\Security\ISocialLogin
 				$this->user = null;
 			}
 		}
-
-		if ($this->user) {
-			$this->logoutUrl = $this->facebook->getLogoutUrl();
-		} else {
-			$this->loginUrl = $this->facebook->getLoginUrl();
-		}
 	}
 
 
@@ -112,7 +142,13 @@ class FacebookLogin extends Object implements \CmsModule\Security\ISocialLogin
 	{
 		$this->load();
 
-		return $this->loginUrl;
+		$params = array();
+
+		if ($this->redirectUri) {
+			$params['redirect_uri'] = $this->redirectUri;
+		}
+
+		return $this->facebook->getLoginUrl($params);
 	}
 
 
@@ -140,7 +176,7 @@ class FacebookLogin extends Object implements \CmsModule\Security\ISocialLogin
 	}
 
 
-	public function connectWithUser(\CmsModule\Security\Entities\UserEntity $userEntity)
+	public function connectWithUser(UserEntity $userEntity)
 	{
 		$userEntity->addSocialLogin($this->getSocialLoginEntity());
 		$this->userRepository->save($userEntity);
@@ -148,13 +184,13 @@ class FacebookLogin extends Object implements \CmsModule\Security\ISocialLogin
 
 
 	/**
-	 * @return \CmsModule\Security\Entities\SocialLoginEntity
+	 * @return SocialLoginEntity
 	 */
 	protected function getSocialLoginEntity()
 	{
 		$this->load();
 
-		$entity = new \CmsModule\Security\Entities\SocialLoginEntity();
+		$entity = new SocialLoginEntity;
 		$entity->setData($this->getData());
 		$entity->setUniqueKey($this->getKey());
 		$entity->setType($this->getType());
@@ -170,7 +206,7 @@ class FacebookLogin extends Object implements \CmsModule\Security\ISocialLogin
 			$data = $this->getData();
 
 			try {
-				/** @var $user \CmsModule\Security\Entities\UserEntity */
+				/** @var $user \CmsModule\Pages\Users\UserEntity */
 				$user = $this->userRepository->createQueryBuilder('a')
 					->join('a.socialLogins', 's')
 					->where('s.type = :type AND s.uniqueKey = :key')
@@ -179,9 +215,11 @@ class FacebookLogin extends Object implements \CmsModule\Security\ISocialLogin
 			} catch (\Doctrine\ORM\NoResultException $e) {
 			}
 
-			if (isset($user) && $user) {
-				return new \Nette\Security\Identity($user->getEmail(), $user->getRoles());
+			if (!isset($user) || !$user) {
+				throw new AuthenticationException($this->translator->translate('User does not exist.'), self::INVALID_CREDENTIAL);
 			}
+
+			return new Identity($user->email, $user->getRoles());
 		}
 	}
 }
